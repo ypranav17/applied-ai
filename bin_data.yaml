@@ -1,0 +1,18 @@
+# Set the path to where coco_to_yolo.py created the dataset
+path: C:\Users\ypran\Downloads\amazon dataset\training_1 # <-- Use your ABSOLUTE path
+
+# Train/val directories (relative to 'path')
+train: images/train
+val: images/val
+
+# Number of classes
+nc: 6
+
+# Class names - MUST match the order from the conversion script's output!
+names:
+  0: B01ATYIK7G   # <-- Make sure these match the output of coco_to_yolo.py
+  1: B00O4OR4GQ   # <-- Make sure these match the output of coco_to_yolo.py
+  2: B00006JNK2   # <-- Make sure these match the output of coco_to_yolo.py
+  3: B013UJS35G   # <-- Make sure these match the output of coco_to_yolo.py
+  4: B00O7CM12W   # <-- Make sure these match the output of coco_to_yolo.py
+  5: unknown

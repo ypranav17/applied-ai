@@ -1,0 +1,9 @@
+streamlit
+torch
+torchvision
+transformers
+pillow
+pandas
+ultralytics
+google-generativeai
+scipy

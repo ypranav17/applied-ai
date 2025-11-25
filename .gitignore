@@ -1,0 +1,39 @@
+# --- System & Python Trash ---
+__pycache__/
+*.pyc
+.DS_Store
+.venv/
+venv/
+.vscode/
+
+# --- The Massive Dataset (DO NOT UPLOAD) ---
+bin-images/
+metadata/
+bin-images1/
+metadata1/
+CVAT_dataset/
+refernce_images/
+training_1/
+CVAT_dataset.zip/
+label-1_annotations.json
+label-2_annotations.json
+label-3_annotations.json
+label-4_annotations.json
+label-5_annotations.json
+
+resnet_counter_best.pth
+resnet_counter_best2.pth
+# --- Training Artifacts (Optional to ignore) ---
+# We ignore the huge training CSVs, but KEEP asin_to_name_map.csv
+full_dataset.csv
+full_dataset_2.csv
+clean_dataset.csv
+classification_dataset.csv
+
+# --- App Temporary Files ---
+temp_bin_image.jpg
+temp_reference_images/
+
+# --- Notes ---
+# We are NOT ignoring 'reference_images/' because the app needs it.
+# We are NOT ignoring '*.pth' or '*.pt' because the app needs the models.
