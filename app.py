@@ -28,10 +28,12 @@ if os.path.exists(CACHE_DIR):
 # For a private demo, this is fine. Do not share this code publicly on GitHub with the key inside.
 # Try to get key from Streamlit secrets, otherwise handle gracefully
 # Load Gemini key securely from Streamlit Secrets
-if "GEMINI_API_KEY" in st.secrets:
-    GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
-else:
-    GEMINI_API_KEY = None 
+gemini_api_key = os.getenv("GEMINI_API_KEY")
+
+if not gemini_api_key:
+    raise ValueError("Missing GEMINI_API_KEY environment variable")
+
+client = genai.Client(api_key=gemini_api_key)
 
 # The 5 Classes YOLO knows
 YOLO_CLASSES = {
