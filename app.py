@@ -24,13 +24,15 @@ if os.path.exists(CACHE_DIR):
     shutil.rmtree(CACHE_DIR)
     os.makedirs(CACHE_DIR)
 
-# --- GEMINI API CONFIGURATION (SECURE) ---
-# Load Gemini key securely from environment (Streamlit Secrets / deployment env)
+# !!! PASTE YOUR GOOGLE GEMINI API KEY HERE !!!
+# For a private demo, this is fine. Do not share this code publicly on GitHub with the key inside.
+# Try to get key from Streamlit secrets, otherwise handle gracefully
+# Load Gemini key securely from Streamlit Secrets
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 if not gemini_api_key:
     raise ValueError("Missing GEMINI_API_KEY environment variable")
 
-# Configure the global client (google-generativeai style)
+# Configure the global client (correct way for google-generativeai)
 genai.configure(api_key=gemini_api_key)
 
 # The 5 Classes YOLO knows
@@ -142,12 +144,11 @@ def validate_order_yolo(model, image_path, order_dict, conf_threshold):
     return f"{status}\n" + "\n".join(messages), result.plot()
 
 def validate_with_gemini(image, order_dict, asin_map):
-    """Sends the image and order to Gemini 2.5 Pro for verification."""
-    # Use the globally configured API key
-    if not gemini_api_key:
-        return "❌ Error: Gemini API Key not configured."
-
-    # Create the Gemini model (no reconfigure, config is global)
+    """Sends the image and order to Gemini 1.5 Flash for verification."""
+    if "YOUR_ACTUAL_API_KEY" in GEMINI_API_KEY:
+        return "❌ Error: Gemini API Key not set in code."
+        
+    genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel('gemini-2.5-pro')
     
     # Construct a clear prompt
@@ -294,6 +295,7 @@ with col2:
                     report = validate_order(
                         "temp_bin_image.jpg", 
                         order_dict, 
+                        
                         img_conf=confidence,
                         txt_conf=0.15
                     )
@@ -320,7 +322,7 @@ with col2:
                     st.error("YOLO model could not be loaded.")
             
             elif model_choice == "Gemini 2.5 pro (Backup)":
-                with st.spinner("Sending to Gemini 2.5 pro..."):
-                    result_text = validate_with_gemini(image, order_dict, asin_map)
-                    st.markdown("### 🤖 Gemini Analysis")
-                    st.write(result_text)
+                 with st.spinner("Sending to Gemini 2.5 pro..."):
+                     result_text = validate_with_gemini(image, order_dict, asin_map)
+                     st.markdown("### 🤖 Gemini Analysis")
+                     st.write(result_text)
