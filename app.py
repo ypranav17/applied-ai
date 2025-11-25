@@ -27,11 +27,11 @@ if os.path.exists(CACHE_DIR):
 # !!! PASTE YOUR GOOGLE GEMINI API KEY HERE !!!
 # For a private demo, this is fine. Do not share this code publicly on GitHub with the key inside.
 # Try to get key from Streamlit secrets, otherwise handle gracefully
-try:
+# Load Gemini key securely from Streamlit Secrets
+if "GEMINI_API_KEY" in st.secrets:
     GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
-except FileNotFoundError:
-    # Fallback for local testing if secrets.toml file is missing
-    GEMINI_API_KEY = "AIzaSyBY_MCYBs0GDVxuZgaBcB-mCRQo8rqUKSY" 
+else:
+    GEMINI_API_KEY = None 
 
 # The 5 Classes YOLO knows
 YOLO_CLASSES = {
