@@ -30,7 +30,6 @@ full_dataset_2.csv
 clean_dataset.csv
 classification_dataset.csv
 
-.streamlit/secrets.toml
 
 # --- App Temporary Files ---
 temp_bin_image.jpg
