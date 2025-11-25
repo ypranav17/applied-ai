@@ -24,14 +24,26 @@ if os.path.exists(CACHE_DIR):
     shutil.rmtree(CACHE_DIR)
     os.makedirs(CACHE_DIR)
 
-# !!! PASTE YOUR GOOGLE GEMINI API KEY HERE !!!
-# For a private demo, this is fine. Do not share this code publicly on GitHub with the key inside.
-# Try to get key from Streamlit secrets, otherwise handle gracefully
+# --- GEMINI API KEY SETUP (SAFE-ish) ---
+# Priority: Streamlit secrets -> environment variable
+GEMINI_API_KEY = None
 try:
-    GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
-except FileNotFoundError:
-    # Fallback for local testing if secrets.toml file is missing
-    GEMINI_API_KEY = "AIzaSyBY_MCYBs0GDVxuZgaBcB-mCRQo8rqUKSY" 
+    # Streamlit Cloud / local secrets.toml
+    GEMINI_API_KEY = st.secrets.get("GEMINI_API_KEY", None)
+except Exception:
+    # In some environments st.secrets might misbehave; ignore and fall back
+    GEMINI_API_KEY = None
+
+if GEMINI_API_KEY is None:
+    # Fallback to environment variable (for local dev)
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
+
+# Configure Gemini once if we have a key
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
+else:
+    # Don't crash the app; just warn. Gemini branch will handle this.
+    st.warning("⚠️ Gemini API key not configured. Gemini backup mode will not work.")
 
 # The 5 Classes YOLO knows
 YOLO_CLASSES = {
@@ -142,11 +154,12 @@ def validate_order_yolo(model, image_path, order_dict, conf_threshold):
     return f"{status}\n" + "\n".join(messages), result.plot()
 
 def validate_with_gemini(image, order_dict, asin_map):
-    """Sends the image and order to Gemini 1.5 Flash for verification."""
-    if "YOUR_ACTUAL_API_KEY" in GEMINI_API_KEY:
-        return "❌ Error: Gemini API Key not set in code."
-        
-    genai.configure(api_key=GEMINI_API_KEY)
+    """Sends the image and order to Gemini 2.5 Pro for verification."""
+    # Guard: no key configured
+    if not GEMINI_API_KEY:
+        return "❌ Gemini Error: API key not configured. Set GEMINI_API_KEY in Streamlit secrets or environment."
+
+    # Create the Gemini model (client already configured globally)
     model = genai.GenerativeModel('gemini-2.5-pro')
     
     # Construct a clear prompt
@@ -158,6 +171,7 @@ def validate_with_gemini(image, order_dict, asin_map):
     prompt += "\nFor each item, state 'Verified' or 'Mismatch' and explain what you see. Be concise."
     
     try:
+        # Multimodal: text + image
         response = model.generate_content([prompt, image])
         return response.text
     except Exception as e:
@@ -186,7 +200,7 @@ with st.sidebar:
         for asin, name in YOLO_CLASSES.items():
             st.markdown(f"- **{asin}:** {name}")
     
-    if model_choice == "Gemini 2.5 pro (Backup)":
+    if model_choice == "Gemini 2.5 Pro (Backup)":
         st.info("✨ Uses Google's multimodal AI to analyze the image.")
 
 # Main Layout
@@ -293,7 +307,6 @@ with col2:
                     report = validate_order(
                         "temp_bin_image.jpg", 
                         order_dict, 
-                        
                         img_conf=confidence,
                         txt_conf=0.15
                     )
@@ -319,8 +332,8 @@ with col2:
                 else:
                     st.error("YOLO model could not be loaded.")
             
-            elif model_choice == "Gemini 2.5 pro (Backup)":
-                 with st.spinner("Sending to Gemini 2.5 pro..."):
-                     result_text = validate_with_gemini(image, order_dict, asin_map)
-                     st.markdown("### 🤖 Gemini Analysis")
-                     st.write(result_text)
+            elif model_choice == "Gemini 2.5 Pro (Backup)":
+                with st.spinner("Sending to Gemini 2.5 Pro..."):
+                    result_text = validate_with_gemini(image, order_dict, asin_map)
+                    st.markdown("### 🤖 Gemini Analysis")
+                    st.write(result_text)
