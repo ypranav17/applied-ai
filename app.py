@@ -176,7 +176,7 @@ with st.sidebar:
     
     model_choice = st.radio(
         "Identification Model:",
-        ("General Purpose (OWL-v2)", "High Precision (YOLOv8)", "Gemini 2.5 Pro (Backup)")
+        ("General Purpose (OWL-v2)", "High Precision (YOLOv8)", "Gemini 2.5 pro (Backup)")
     )
     
     confidence = st.slider("Confidence Threshold (CV Models)", 0.1, 1.0, 0.25)
