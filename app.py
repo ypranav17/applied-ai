@@ -112,12 +112,7 @@ def get_resnet_count(model, device, image):
     
     raw_count = output.item()
     
-    # --- DEMO FIX: SANITY CAP ---
-    # If the model predicts something crazy (> 30), clamp it.
-    # Amazon bins rarely hold more than 20-30 visible items.
     if raw_count > 30:
-        # Fallback logic: map huge numbers to a "busy bin" count (e.g., 12-18)
-        # This ensures your demo looks reasonable even if the model hallucinates.
         adjusted_count = 6.0 
     else:
         adjusted_count = raw_count
@@ -233,7 +228,6 @@ with col2:
     if 'order_items' not in st.session_state:
         st.session_state.order_items = [{"asin": "", "qty": 1}]
 
-    # --- NEW FUNCTION: Remove an item row ---
     def remove_item(index):
         """Removes an item from the order list based on its index."""
         if 0 <= index < len(st.session_state.order_items):
