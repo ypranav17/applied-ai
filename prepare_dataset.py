@@ -3,11 +3,9 @@ import json
 import csv
 from tqdm import tqdm  # Progress bar
 
-# --- CONFIGURATION ---
 METADATA_DIR = "metadata1"       # Folder with all .json files
 IMAGES_DIR = "bin-images1"       # Folder with all .jpg files
 OUTPUT_CSV = "full_dataset_2.csv"
-# ---------------------
 
 def create_csv():
     print(f"Scanning {METADATA_DIR} for dataset generation...")
@@ -38,14 +36,12 @@ def create_csv():
                     with open(json_path, 'r') as f:
                         data = json.load(f)
                         
-                        # Extract the label (EXPECTED_QUANTITY)
                         quantity = data.get('EXPECTED_QUANTITY')
                         
                         if quantity is not None:
                             writer.writerow([img_path, quantity])
                             valid_pairs += 1
                 except Exception as e:
-                    # Skip corrupted JSONs silently to keep moving
                     pass
 
     print(f"\n✅ CSV Generation Complete!")
